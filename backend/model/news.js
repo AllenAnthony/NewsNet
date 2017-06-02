@@ -37,7 +37,7 @@ news.getAll = function(callback){
         }
 
         var query='SELECT * FROM news ORDER by id DESC';
-        connection.query(query,[],function(err,result,fields){
+        connection.query(query,[],function(err,result,field){
             if(err){
                 console.log("get all error"+err);
             }
@@ -49,5 +49,49 @@ news.getAll = function(callback){
     })
 }
 
+news.getOneByTypeOrdered=function(type,callback){
+    newsPool.getConnection(function(err,connectoin){
+        if(err){
+            console.log("db connect error"+err);
+        }
 
+        var query='SELECT * FROM news WHERE type = ? ORDER BY click_count DESC, id DESC';
+        connection.query(query,[type],function(err,result,field){
+            if(err){
+                console.log("get One By Type Ordered error"+err);
+            }else{
+                callback(result);
+            }
+
+            connection.release();
+        })
+
+    })
+}
+
+news.click=function(id,callback){
+    newsPool.getConnection(function(err,connection){
+        if(err){
+            console.log("db connect error"+err);
+        }
+
+        var query='UPDATE news SET click_count = click_count +1 WHERE id = ?';
+        connection.query(query,[id],function(err,result,field){
+            if(err){
+                console.log("update click_count error"+err);
+            }else{
+                if(result.affectedRows==1){
+                    callback(true);
+                }else{
+                    callback(false);
+                }
+            }
+
+            connection.release();
+        })
+
+    })
+}
+
+module.exports=news;
 

@@ -1,102 +1,167 @@
 var pool = require('./index');
 
-var News = {};
+var Users = {};
 
-// News:
+// Users:
 // id(key AUTO_INCREMENT)
-// title
-// Time
-// author
-// url
-// image
-// type
-// click_count
+// name
+// email
+// password
+// like_top
+// like_shehui
+// like_guonei
+// like_guoji
+// like_yule
+// like_tiyu
+// like_junshi
+// like_keji
+// like_caijing
+// like_shishang
 
-
-// data: objects' array
-News.add = (data, callback) => {
-    pool.getConnection((err, connection) => {
-        if(err){
-            console.log("Database connect error");
-        }
-
-        var query = 'INSERT INTO news (title, time, author, url, image, type) VALUES (?, ?, ?, ?, ?, ?)';
-        for(var i = 0; i < data.length; i++){
-            connection.query(query, [data[i].title, data[i].date, data[i].author_name, data[i].url, data[i].thumbnail_pic_s, data[i].category], (err, results, fields) => {
-                if (err) {
-                    console.log("Insert Error: " + err);
-                }
-
-
-            })
-        }
-
-        // callback(results);
-        connection.release();
-    })
+const columnInDB = {
+    头条: 'visit_top',
+    社会: 'visit_shehui',
+    国内: 'visit_guonei',
+    国际: 'visit_guoji',
+    娱乐: 'visit_yule',
+    体育: 'visit_tiyu',
+    军事: 'visit_junshi',
+    科技: 'visit_keji',
+    财经: 'visit_caijing',
+    时尚: 'visit_shishang'
 };
 
-// type: string
-News.getOneByTypeOrderByIdAndClick = (index, type, callback) => {
+// 数据库 query 是异步的，等待操作结果的时候就进行了下一步。
+
+// data: object about one user's info
+Users.add = (data, callback) => {
     pool.getConnection((err, connection) => {
         if(err){
             console.log("Database connect error");
         }
 
-        var query = 'SELECT * FROM news WHERE type = ? ORDER BY click_count DESC, id DESC';
-        connection.query(query, [type], (err, result, fields) => {
+        var query = 'INSERT INTO users (name, password, email) VALUES (?, ?, ?)';
+        connection.query(query, [data.name, data.password, data.email], (err, results, fields) => {
             if (err) {
-                console.log("Select Error: " + err);
-            }else{
-                callback(result[index]);
-            }
-
-            connection.release();
-        })
-    })
-};
-
-// 按照时间远近得到最近的
-News.getAll = (callback) => {
-    pool.getConnection((err, connection) => {
-        if(err){
-            console.log("Database connect error");
-        }
-
-        var query = 'SELECT * FROM news ORDER BY id DESC';
-        connection.query(query, [], (err, result, fields) => {
-            if (err) {
-                console.log("Select Error: " + err);
-                callback([]);
-            }
-
-            callback(result);
-            connection.release();
-        })
-    })
-};
-
-// id: news id
-News.click = (id, callback) => {
-    pool.getConnection((err, connection) => {
-        if(err){
-            console.log("Database connect error");
-        }
-
-        var query = 'UPDATE news SET click_count = click_count + 1 WHERE id = ?';
-        connection.query(query, [id], (err, result, fields) => {
-            if (err) {
-                console.log("Update Error: " + err);
-            }else{
-                if(result.affectedRows == 1){
-                    callback(true);
-                }else{
+                console.log("Insert Error: " + err);
+            } else {
+                if(results.affectedRows == 0){
                     callback(false);
+                }else{
+                    callback(true);
                 }
             }
+
             connection.release();
         })
+
     })
+};
+
+// data: object about preference rank
+Users.updatePreference = (data, callback) => {
+    pool.getConnection((err, connection) => {
+        if(err){
+            console.log("Database connect error");
+        }
+
+        var query = 'UPDATE users SET like_top = ?, like_shehui = ?, like_guonei = ?, like_guoji = ?, like_yule = ?, like_tiyu = ?, like_junshi = ?, like_keji = ?, like_caijing = ?, like_shishang = ? WHERE name = ?';
+
+        var queryParam = [];
+        for(let i = 0; i < 10; i++){
+            queryParam[i] = Number.parseInt(data.settingArr[2*i]);
+        }
+        queryParam.push(data.name);
+
+        connection.query(query, queryParam, (err, results, fields) => {
+            if (err) {
+                console.log("Updata Error: " + err);
+            } else {
+                query = 'SELECT * FROM users WHERE name = ?';
+                connection.query(query, [data.name], (err, results, fields) => {
+                    if (err) {
+                        console.log("Select Error: " + err);
+                    }else{
+                        callback(results);
+                    }
+                })
+
+            }
+
+            connection.release();
+        })
+
+    })
+};
+
+// data: object about one user's info
+Users.getOneByPassword = (data, callback) => {
+    pool.getConnection((err, connection) => {
+        if(err){
+            console.log("Database connect error");
+        }
+
+        var query = 'SELECT * FROM users WHERE name = ? AND password = ?';
+        connection.query(query, [data.name, data.password], (err, results, fields) => {
+            if (err) {
+                console.log("Select Error: " + err);
+            }else{
+                callback(results);
+            }
+
+            connection.release();
+        })
+
+    })
+};
+
+// data: object about one user's info
+Users.getOneByEmail = (data, callback) => {
+    pool.getConnection((err, connection) => {
+        if(err){
+            console.log("Database connect error");
+        }
+
+        var query = 'SELECT * FROM users WHERE name = ? AND email = ?';
+        connection.query(query, [data.name, data.email], (err, results, fields) => {
+            if (err) {
+                console.log("Select Error: " + err);
+            }else{
+                callback(results);
+            }
+
+            connection.release();
+        })
+
+    })
+};
+
+// name: username; column: column name in Chinese
+Users.visitColumn = (name, column, callback) => {
+    if(name == undefined){
+        callback(true);
+    }else{
+        pool.getConnection((err, connection) => {
+            if(err){
+                console.log("Database connect error");
+            }
+
+            var query = 'UPDATE users SET ' + columnInDB[column] + ' = ' + columnInDB[column] + ' + 1 WHERE name = ?';
+            connection.query(query, [name], (err, result, fields) => {
+                if (err) {
+                    console.log("Update Error: " + err);
+                }else{
+                    if(result.affectedRows == 0){
+                        callback(false);
+                    }else{
+                        callback(true);
+                    }
+                }
+                connection.release();
+            })
+        })
+    }
 }
 
-module.exports = News;
+
+module.exports = Users;
