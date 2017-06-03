@@ -1,167 +1,190 @@
-var pool = require('./index');
+var express = require('express');
+var superagent = require('superagent');
 
-var Users = {};
+var Users = require('../models/users');
+var News = require('../models/news');
 
-// Users:
-// id(key AUTO_INCREMENT)
-// name
-// email
-// password
-// like_top
-// like_shehui
-// like_guonei
-// like_guoji
-// like_yule
-// like_tiyu
-// like_junshi
-// like_keji
-// like_caijing
-// like_shishang
+var router = express.Router();
+var newsType = ["top", "shehui", "guonei", "guoji", "yule", "tiyu", "junshi", "keji", "caijing", "shishang"];
 
-const columnInDB = {
-    头条: 'visit_top',
-    社会: 'visit_shehui',
-    国内: 'visit_guonei',
-    国际: 'visit_guoji',
-    娱乐: 'visit_yule',
-    体育: 'visit_tiyu',
-    军事: 'visit_junshi',
-    科技: 'visit_keji',
-    财经: 'visit_caijing',
-    时尚: 'visit_shishang'
-};
-
-// 数据库 query 是异步的，等待操作结果的时候就进行了下一步。
-
-// data: object about one user's info
-Users.add = (data, callback) => {
-    pool.getConnection((err, connection) => {
-        if(err){
-            console.log("Database connect error");
-        }
-
-        var query = 'INSERT INTO users (name, password, email) VALUES (?, ?, ?)';
-        connection.query(query, [data.name, data.password, data.email], (err, results, fields) => {
-            if (err) {
-                console.log("Insert Error: " + err);
-            } else {
-                if(results.affectedRows == 0){
-                    callback(false);
-                }else{
-                    callback(true);
-                }
-            }
-
-            connection.release();
-        })
-
-    })
-};
-
-// data: object about preference rank
-Users.updatePreference = (data, callback) => {
-    pool.getConnection((err, connection) => {
-        if(err){
-            console.log("Database connect error");
-        }
-
-        var query = 'UPDATE users SET like_top = ?, like_shehui = ?, like_guonei = ?, like_guoji = ?, like_yule = ?, like_tiyu = ?, like_junshi = ?, like_keji = ?, like_caijing = ?, like_shishang = ? WHERE name = ?';
-
-        var queryParam = [];
-        for(let i = 0; i < 10; i++){
-            queryParam[i] = Number.parseInt(data.settingArr[2*i]);
-        }
-        queryParam.push(data.name);
-
-        connection.query(query, queryParam, (err, results, fields) => {
-            if (err) {
-                console.log("Updata Error: " + err);
-            } else {
-                query = 'SELECT * FROM users WHERE name = ?';
-                connection.query(query, [data.name], (err, results, fields) => {
-                    if (err) {
-                        console.log("Select Error: " + err);
-                    }else{
-                        callback(results);
-                    }
-                })
-
-            }
-
-            connection.release();
-        })
-
-    })
-};
-
-// data: object about one user's info
-Users.getOneByPassword = (data, callback) => {
-    pool.getConnection((err, connection) => {
-        if(err){
-            console.log("Database connect error");
-        }
-
-        var query = 'SELECT * FROM users WHERE name = ? AND password = ?';
-        connection.query(query, [data.name, data.password], (err, results, fields) => {
-            if (err) {
-                console.log("Select Error: " + err);
-            }else{
-                callback(results);
-            }
-
-            connection.release();
-        })
-
-    })
-};
-
-// data: object about one user's info
-Users.getOneByEmail = (data, callback) => {
-    pool.getConnection((err, connection) => {
-        if(err){
-            console.log("Database connect error");
-        }
-
-        var query = 'SELECT * FROM users WHERE name = ? AND email = ?';
-        connection.query(query, [data.name, data.email], (err, results, fields) => {
-            if (err) {
-                console.log("Select Error: " + err);
-            }else{
-                callback(results);
-            }
-
-            connection.release();
-        })
-
-    })
-};
-
-// name: username; column: column name in Chinese
-Users.visitColumn = (name, column, callback) => {
-    if(name == undefined){
-        callback(true);
-    }else{
-        pool.getConnection((err, connection) => {
+router.get('/fresh', function(req, res, next) {
+    var i;
+    // 默认每种类型新闻请求一次
+    for(i = 0; i < newsType.length; i++){
+        superagent.get('http://v.juhe.cn/toutiao/index?type='+newsType[i]+'&key=293ed1ed7fbc7f612425b87414993e03').end(function(err, sres){
             if(err){
-                console.log("Database connect error");
+                //暂时不处理error
             }
 
-            var query = 'UPDATE users SET ' + columnInDB[column] + ' = ' + columnInDB[column] + ' + 1 WHERE name = ?';
-            connection.query(query, [name], (err, result, fields) => {
-                if (err) {
-                    console.log("Update Error: " + err);
-                }else{
-                    if(result.affectedRows == 0){
-                        callback(false);
-                    }else{
-                        callback(true);
-                    }
-                }
-                connection.release();
-            })
+            // if(sres.result.stat == "1"){
+            //      暂时不处理状态码
+            // }
+
+            // 响应对象数据是一个json字符串，通过es5中JSON对象来转换
+            var jsonData = JSON.parse(sres.text);
+
+            News.add(jsonData.result.data, function (result) {
+
+            });
         })
     }
-}
+    res.send("fresh success");
+});
+
+router.get('/', (req, res, next) => {
+    res.render('index',{})//send the index.html to the cilent
+});
+
+router.get('/init', (req, res, next) => {
+    News.getAll((result) => {
+        var code = 0
+        if(result.length == 0){
+            code = -1;
+        }
+        res.json({
+            code: code,
+            content: result
+        });
+
+    })
+});
+
+router.post('/getone', (req, res, next) => {
+    News.getOneByTypeOrderByIdAndClick(Number.parseInt(req.body.index), req.body.type, (result) => {
+        if(result){
+            res.json({
+                code: 0,
+                msg: "success",
+                news: result
+            })
+        }else{
+            res.json({
+                code: -1,
+                msg: "fail",
+            })
+        }
+    })
+})
+
+router.post('/register', (req, res, next) => {
+    var promise = new Promise((resolve, reject) => {
+        Users.getOneByEmail(req.body, (result) => {
+            if(result.length != 0){
+                // 用户名和邮箱重复
+                res.json({
+                    code: -1,
+                    msg: "用户名和邮箱重复",
+                });
+            }else{
+                resolve(true);
+            }
+        })
+    });
+
+    promise.then((unique) => {
+        if(unique){
+            Users.add(req.body, (result) => {
+                if(result){
+                    res.json({
+                        code: 0,
+                        msg: "注册成功"
+                    })
+                }else{
+                    res.json({
+                        code: -1,
+                        msg: "注册失败，数据库错误"
+                    })
+                }
+            })
+        }
+    })
+});
+
+router.post('/login', (req, res, next) => {
+    Users.getOneByPassword(req.body, (result) => {
+        if(result.length == 0){
+            res.json({
+                code: -1,
+                msg: "用户名或密码错误"
+            })
+        }else{
+            result[0].code = 0;
+            result[0].msg = "登陆成功";
+            res.json(result[0]); // return id
+        }
+    })
+});
+
+router.post('/setting', (req, res, next) => {
+    Users.updatePreference(req.body, (result) => {
+        if(result.length > 0){
+            result[0].code = 0;
+            result[0].msg = "个人偏好设置更新成功"; //result is a list of many dictionaries(only one here), result[0] is the first item found, and is a dictionary
+            res.json(result[0]);
+        }else{
+            res.json({
+                code: -1,
+                msg: "个人偏好设置更新失败",
+            })
+        }
+    })
+})
+
+router.post('/user_behaviour', (req, res, next) => {
+    var data = {
+        newsID: Number.parseInt(req.body.newsID),
+        name: req.body.name,
+        column: req.body.column
+    };
+
+    News.click(data.newsID, (newsResult) => {
+        Users.visitColumn(data.name, data.column, (usersResult) => {
+            if(newsResult && usersResult){
+                res.json({
+                    code: 0,
+                    msg: "用户操作记录成功"
+                })
+            }else{
+                if(newsResult || usersResult){
+                    if(newsResult){
+                        res.json({
+                            code: -1,
+                            msg: "新闻点击操作记录成功"
+                        })
+                    }else{
+                        res.json({
+                            code: -1,
+                            msg: "栏目下新闻访问操作操作记录成功"
+                        })
+                    }
+                }else{
+                    res.json({
+                        code: -1,
+                        msg: "用户操作记录失败"
+                    })
+                }
+            }
+        })
+    })
+})
+
+router.post('/update_cookie', (req, res, next) => {
+    Users.getOneByEmail({
+        name: req.body.name,
+        email: req.body.email
+    }, (result) => {  // result is a list with only one dictionary(item)
+        if(result.length != 0){
+            result[0].code = 0;
+            result[0].msg = "获取用户信息成功";
+            res.json(result[0]);
+        }else{
+            res.json({
+                code: -1,
+                msg: "获取用户信息失败"
+            })
+        }
+    })
+})
 
 
-module.exports = Users;
+module.exports = router;
