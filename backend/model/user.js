@@ -1,6 +1,6 @@
-var newsPool = require('./index')
+let newsPool = require('./index');
 
-var user={}
+let user={};
 
 // Users:
 // id(key AUTO_INCREMENT)
@@ -30,7 +30,7 @@ user.add=function(data,callback){
         }
 
         query='INSERT INTO user (name,email,password) VALUE(?,?,?)';
-        for(var i=0;i<data.length;i++){
+        for(let i=0;i<data.length;i++){
             connection.query(query,[data[i].name,data[i].email,data[i].password],function(err,result,field){
                 if(err){
                     console.log("insert into user error"+err);
