@@ -1,8 +1,8 @@
 let express = require('express');
 let superagent = require('superagent');
 
-let news = require('../model/news');
-let user = require('../model/user');
+let news = require('./model/news');
+let user = require('./model/user');
 
 let router=express.Router();
 let newsType = ["top", "shehui", "guonei", "guoji", "yule", "tiyu", "junshi", "keji", "caijing", "shishang"];
@@ -28,10 +28,10 @@ router.get('/fresh',function(req,res,next){
     }
         
 
-})
+});
 
 router.get('/',function(req,res,next){
-    res.render('index',{});
+    res.render('index');
 });
 
 router.get('/init',function(req,res,next){

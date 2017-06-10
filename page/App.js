@@ -2,10 +2,10 @@ import React from 'react';
 import { Layout, Menu, Icon, message } from 'antd';
 import Cookie from 'js-cookie';
 
-import User from "./users/index";
-import News from "./news/index";
-import About from "./about.index";
-import {updateCookie} from "./user/util";
+import User from "../element/user/index";
+import News from "../element/news/index";
+import About from "../element/about/index";
+import {updateCookie} from "../element/user/util";
 
 import "antd/dist/antd/antd.css";
 import "./App.css"
