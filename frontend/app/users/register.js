@@ -101,6 +101,7 @@ class RegisterForm extends React.Component{
                 visible={this.state.show}
                 onCancel={this.props.cancel}
                 footer={null}
+                style={{background: '#555'}}
             >
                 <div style={{margin: '40px 0px 48px 30px'}}>
                     <Form onSubmit={this.handleSubmit}>

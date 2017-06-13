@@ -12,32 +12,27 @@ let newsPool = require('./index');
 let news = {};
 
 news.add = function(data,callback){
-    newsPool.getConnection(function(err,connection){
-        if(err){
-            console.log("database connect error:" + err);
-        }
 
-        let query = 'INSERT INTO news (title,time,author,url,image,type,click_count) VALUES(?,?,?,?,?,?,0)';
-        for(let i=0;i<data.length;i++){
-            connection.query(query,[data[i].title,data[i].date,data[i].author_name,data[i].url,data[i].thumbnail_pic_s,data[i].category],function(err,results,fields){
+    let query = 'INSERT INTO news (title,time,author,url,image,type,click_count) VALUES(?,?,?,?,?,?,?)';
+    for(let i=0;i<data.length;i++){
+        //console.log(data[i].category);
+        if(data[i].category!==null){
+            newsPool.query(query,[data[i].title,data[i].date,data[i].author_name,data[i].url,data[i].thumbnail_pic_s,data[i].category,0],function(err,results,fields){
                 if(err){
                     console.log("insert data into db error"+ err);
                 }
             })
         }
+        //console.log("插入成功");
+    }
 
-        connection.release();
-    })
+
 }
 
 news.getAll = function(callback){
-    newsPool.getConnection(function(err,connection){
-        if(err){
-            console.log("db connect error"+err);
-        }
 
-        let query='SELECT * FROM news ORDER by id DESC';
-        connection.query(query,[],function(err,result,field){
+    let query='SELECT * FROM news ORDER by id DESC';
+    newsPool.query(query,[],function(err,result,field){
             if(err){
                 console.log("get all error"+err);
             }
@@ -45,52 +40,35 @@ news.getAll = function(callback){
             callback(result);
             connection.release();
         })
-
-    })
 }
 
 news.getOneByTypeOrdered=function(type,callback){
-    newsPool.getConnection(function(err,connectoin){
+
+    let query='SELECT * FROM news WHERE type = ? ORDER BY click_count DESC, id DESC';
+    newsPool.query(query,[type],function(err,result,field){
         if(err){
-            console.log("db connect error"+err);
+            console.log("get One By Type Ordered error"+err);
+        }else{
+            callback(result);
         }
-
-        let query='SELECT * FROM news WHERE type = ? ORDER BY click_count DESC, id DESC';
-        connection.query(query,[type],function(err,result,field){
-            if(err){
-                console.log("get One By Type Ordered error"+err);
-            }else{
-                callback(result);
-            }
-
-            connection.release();
-        })
-
     })
+
 }
 
 news.click=function(id,callback){
-    newsPool.getConnection(function(err,connection){
+    let query='UPDATE news SET click_count = click_count +1 WHERE id = ?';
+    newsPool.query(query,[id],function(err,result,field){
         if(err){
-            console.log("db connect error"+err);
-        }
-
-        let query='UPDATE news SET click_count = click_count +1 WHERE id = ?';
-        connection.query(query,[id],function(err,result,field){
-            if(err){
-                console.log("update click_count error"+err);
+            console.log("update click_count error"+err);
+        }else{
+            if(result.affectedRows==1){
+                callback(true);
             }else{
-                if(result.affectedRows==1){
-                    callback(true);
-                }else{
-                    callback(false);
-                }
+                callback(false);
             }
-
-            connection.release();
-        })
-
+        }
     })
+
 }
 
 module.exports=news;

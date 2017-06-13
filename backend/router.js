@@ -12,8 +12,9 @@ let isFreshing=0;
 router.get('/fresh', function(req, res, next) {
     for(let i = 0; i < newsType.length; i++){
         superagent.get('http://v.juhe.cn/toutiao/index?type='+newsType[i]+'&key=98703f292c4aebba837423e10aee73b1').end(function(err, myres){
+            console.log(myres.text);
             let jsonData=JSON.parse(myres.text);
-            News.add(jsonData.result.data,(result)=>{});
+            news.add(jsonData.result.data,(result)=>{});
         });
     }
     res.send("fresh success");
@@ -22,7 +23,8 @@ router.get('/fresh', function(req, res, next) {
 
 
 router.get('/',function(req,res,next){
-    res.render('index');
+    //res.render('index',{});
+    res.sendfile(__dirname+"/view/"+"index.html")
 });
 
 router.get('/init',function(req,res,next){
@@ -61,19 +63,39 @@ router.post('/getone',(req,res,next)=>{
 router.post('/register',(req,res,next)=>{
     let promise=new Promise((resolve,reject)=>{
         user.findByNameEmail(req.body,(result)=>{
+            console.log("111"+result);
             if(result.length!=0){
                 res.json({
                     code:-1,
                     msg:"user name and email are duplicated"
                 })
             }else{
-                res.json({
-                    code:-1,
-                    msg:"register failed, database error"
-                })
+                resolve(true);
             }
         })
     })
+
+    promise.then((unique)=>{
+        if(unique){
+
+            user.add(req.body,(result)=>{
+                if(result){
+                    res.json({
+                        code: 0,
+                        msg: "注册成功"
+                    })
+                }else{
+                    res.json({
+                        code: -1,
+                        msg: "注册失败，数据库错误"
+                    })
+                }
+            })
+        }
+    })
+
+
+
 });
 
 router.post('/login',(req,res,next)=>{
