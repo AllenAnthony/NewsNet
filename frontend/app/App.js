@@ -10,14 +10,15 @@ import {updateCookie} from './users/api'
 
 const { Sider } = Layout;
 const SubMenu = Menu.SubMenu;
+const MenuItemGroup = Menu.ItemGroup;
 
 import 'antd/dist/antd.css';
 import './App.css';
 
 class App extends React.Component {
-    mynews=[];
 
     state = {
+        current:0,
         loginShow: false,
         regShow: false,
         setShow: false,
@@ -27,7 +28,7 @@ class App extends React.Component {
         loginTextShow: true,
         mode: 'inline',
         newsArr: [],
-        newsType: ["猜你喜欢", "头条", "社会", "国内", "国际", "娱乐", "体育", "军事", "科技", "财经", "时尚"],
+        newsType: ["我喜欢", "头条", "社会", "国内", "国际", "娱乐", "体育", "军事", "科技", "财经", "时尚"],
         duringDays: 0,
         column: "头条",   //默认栏目头条
         columnLikeRatio: [],
@@ -46,7 +47,6 @@ class App extends React.Component {
         console.log("this.state.duringDays: "+this.state.duringDays);
         console.log("this.state.column: "+this.state.column);
         console.log("this.state.columnLikeRatio: "+this.state.columnLikeRatio);
-        console.log("this.mynews: "+this.mynews);
     };
 
     onCollapse = (collapsed) => {
@@ -56,6 +56,13 @@ class App extends React.Component {
             loginTextShow: !collapsed,
         });
     };
+
+    navHandleClick = (event)=>{
+        this.setState({
+            current: event.key,
+        });
+    };
+
     handleClick = (event) => {
         var value = event.target.outerHTML;
         var nowState;
@@ -96,78 +103,81 @@ class App extends React.Component {
         }else{
             //新闻栏目
             let column = event.target.innerText;
-            if(column == "猜你喜欢"){
+            if(column == "我喜欢"){
                 var userInfo = getUserInfo();
                 if(userInfo == undefined){
-                    message.warning('请您先登陆');
+                    message.warning('please sign in');
                 }else{
                     updateCookie(userInfo.name, userInfo.email, (result) => {
+                        console.log("updateCookie return  "+result);
                         nowState = {
                             loginShow: false,
                             regShow: false,
                             setShow: false,
                             newsShow: true,
                             aboutShow: false,
-                        }
+                        };
 
                         userInfo = getUserInfo();
-                        nowState.column = "猜你喜欢";
-                        var tmpLikeRatio = [{
+                        console.log("cookie 中的 userInfo");
+                        console.log(userInfo);
+                        nowState.column = "我喜欢";
+                        let tmpLikeRatio = [{
                             type: "头条",
-                            like: userInfo.like_top,
+                            prefer: userInfo.pre_top,
                             visit: userInfo.visit_top,
                             ratio: 0
                         },{
                             type: "社会",
-                            like: userInfo.like_shehui,
+                            prefer: userInfo.pre_shehui,
                             visit: userInfo.visit_shehui,
                             ratio: 0
                         },{
                             type: "国内",
-                            like: userInfo.like_guonei,
+                            prefer: userInfo.pre_guonei,
                             visit: userInfo.visit_guonei,
                             ratio: 0
                         },{
                             type: "国际",
-                            like: userInfo.like_guoji,
+                            prefer: userInfo.pre_guoji,
                             visit: userInfo.visit_guoji,
                             ratio: 0
                         },{
                             type: "娱乐",
-                            like: userInfo.like_yule,
+                            prefer: userInfo.pre_yule,
                             visit: userInfo.visit_yule,
                             ratio: 0
                         },{
                             type: "体育",
-                            like: userInfo.like_tiyu,
+                            prefer: userInfo.pre_tiyu,
                             visit: userInfo.visit_tiyu,
                             ratio: 0
                         },{
                             type: "军事",
-                            like: userInfo.like_junshi,
+                            prefer: userInfo.pre_junshi,
                             visit: userInfo.visit_junshi,
                             ratio: 0
                         },{
                             type: "科技",
-                            like: userInfo.like_keji,
+                            prefer: userInfo.pre_keji,
                             visit: userInfo.visit_keji,
                             ratio: 0
                         },{
                             type: "财经",
-                            like: userInfo.like_caijing,
+                            prefer: userInfo.pre_caijing,
                             visit: userInfo.visit_caijing,
                             ratio: 0
                         },{
                             type: "时尚",
-                            like: userInfo.like_shishang,
+                            prefer: userInfo.pre_shishang,
                             visit: userInfo.visit_shishang,
                             ratio: 0
                         }];
-                        var maxVisit = getMaxOfArrObj(tmpLikeRatio, "visit");
-                        var sumRatio = 0;
+                        let maxVisit = getMaxOfArrObj(tmpLikeRatio, "visit");
+                        let sumRatio = 0;
 
                         for(let item of tmpLikeRatio){
-                            item.ratio = (0.5*item.visit/maxVisit) + (0.5*item.like/5);
+                            item.ratio = (0.5*item.visit/maxVisit) + (0.5*item.prefer/5);
                             sumRatio += item.ratio
                         }
                         for(let item of tmpLikeRatio){
@@ -180,6 +190,7 @@ class App extends React.Component {
                     })
                 }
             }else{
+                console.log("column:"+column);
                 nowState = {
                     loginShow: false,
                     regShow: false,
@@ -223,7 +234,6 @@ class App extends React.Component {
                     newsArr: data.content,
                     duringDays: Number.parseInt(duringDays),
                 });
-                this.mynews=data.content;
                 console.log(data);
                 console.log("第一次赋初值");
                 console.log(this.state.newsArr[0]);
@@ -241,6 +251,23 @@ class App extends React.Component {
             color: '#ffffff',
             display: this.state.loginTextShow ? 'block' : 'none',
         };
+        let netCSS = {
+            margin: '10px 18px 6px 18px',
+            textAlign: 'center',
+            fontSize: '20px',
+            fontFamily: '微软雅黑',
+            color: '#ffffff',
+            display: this.state.loginTextShow ? 'block' : 'none',
+        };
+        let userCSS = {
+            margin: '0px 18px 6px 18px',
+            textAlign: 'left',
+            fontSize: '20px',
+            fontFamily: '微软雅黑',
+            color: '#ffffff',
+            display: this.state.loginTextShow ? 'block' : 'none',
+        };
+
         let newsNav = this.state.newsType.map((item, index) => {
             return(
                 <Menu.Item key={index}><div onClick={this.handleClick}>{item}</div></Menu.Item>
@@ -249,41 +276,85 @@ class App extends React.Component {
         this.showMyState();
 
         return (
-            <Layout style={{ height: "100vh" }}>
+            <Layout style={{ height: "100vh"}}>
                 <Sider
-                    collapsible
-                    collapsed={this.state.collapsed}
-                    onCollapse={this.onCollapse}
+                    width={90}
+                    style={{ background: '#0dbdff' }}
                 >
-                    <div className="logo" />
+                    <div style={netCSS}>News</div>
+                    <div style={netCSS}>Net</div>
+                    <br/><br/><br/>
                     <div style={userStateCSS}>
                         {getWelcomedInfo()}
                         <hr style={{marginTop: '5px'}} />
                     </div>
-                    <Menu theme="dark" mode={this.state.mode}>
-                        <SubMenu
-                            title={<div><Icon type="user" /><span className="nav-text">用户中心</span></div>}
-                        >
-                            <Menu.Item><div onClick={this.handleClick}>登陆</div></Menu.Item>
-                            <Menu.Item><div onClick={this.handleClick}>注册</div></Menu.Item>
-                            <Menu.Item><div onClick={this.handleClick}>个人设置</div></Menu.Item>
-                        </SubMenu>
+                    <Menu  mode={this.state.mode}>
 
-                        <SubMenu
-                            title={<div onClick={this.handleClick}><Icon type="global" /><span className="nav-text">新闻中心</span></div>}
-                        >
-                            {newsNav}
-                        </SubMenu>
+                        <Menu.Item style={{ background: '#0dbdff' }}><div className="nav-text" onClick={this.handleClick}>登陆</div></Menu.Item>
+                        <Menu.Item style={{ background: '#0dbdff' }}><div className="nav-text" onClick={this.handleClick}>注册</div></Menu.Item>
+                        <Menu.Item style={{ background: '#0dbdff' }}><div className="nav-text" onClick={this.handleClick}>个人设置</div></Menu.Item>
+                        {/*<SubMenu*/}
+                            {/*title={<div><Icon type="user" /><span className="nav-text">用户中心</span></div>}*/}
+                        {/*>*/}
+                            {/*<Menu.Item><div onClick={this.handleClick}>登陆</div></Menu.Item>*/}
+                            {/*<Menu.Item><div onClick={this.handleClick}>注册</div></Menu.Item>*/}
+                            {/*<Menu.Item><div onClick={this.handleClick}>个人设置</div></Menu.Item>*/}
+                        {/*</SubMenu>*/}
 
-                        <Menu.Item>
-                                <div onClick={this.handleClick}>
-                                    <Icon type="file" />
-                                    <span className="nav-text">关于</span>
-                                </div>
-                        </Menu.Item>
+                        {/*<SubMenu*/}
+                            {/*title={<div onClick={this.handleClick}><Icon type="global" /><span className="nav-text">新闻中心</span></div>}*/}
+                        {/*>*/}
+                            {/*{newsNav}*/}
+                        {/*</SubMenu>*/}
+
+                        {/*<Menu.Item>*/}
+                                {/*<div onClick={this.handleClick}>*/}
+                                    {/*<Icon type="file" />*/}
+                                    {/*<span className="nav-text">关于</span>*/}
+                                {/*</div>*/}
+                        {/*</Menu.Item>*/}
                     </Menu>
                 </Sider>
                 <Layout style={{ background: "#fff"}}>
+                    <Menu
+                        onClick={this.navHandleClick}
+                        selectedKeys={[this.state.current]}
+                        mode="horizontal"
+                    >
+                        <Menu.Item key="youmaylike">
+                            <div onClick={this.handleClick} style={{fontSize:24}}>我喜欢</div>
+                        </Menu.Item>
+                        <Menu.Item key="top">
+                            <div onClick={this.handleClick} style={{fontSize:24}}>头条</div>
+                        </Menu.Item>
+                        <Menu.Item key="shehui">
+                            <div onClick={this.handleClick} style={{fontSize:24}}>社会</div>
+                        </Menu.Item>
+                        <Menu.Item key="guonei">
+                            <div onClick={this.handleClick} style={{fontSize:24}}>国内</div>
+                        </Menu.Item>
+                        <Menu.Item key="guoji">
+                            <div onClick={this.handleClick} style={{fontSize:24}}>国际</div>
+                        </Menu.Item>
+                        <Menu.Item key="yule">
+                            <div onClick={this.handleClick} style={{fontSize:24}}>娱乐</div>
+                        </Menu.Item>
+                        <Menu.Item key="tiyu">
+                            <div onClick={this.handleClick} style={{fontSize:24}}>体育</div>
+                        </Menu.Item>
+                        <Menu.Item key="junshi">
+                            <div onClick={this.handleClick} style={{fontSize:24}}>军事</div>
+                        </Menu.Item>
+                        <Menu.Item key="keji">
+                            <div onClick={this.handleClick} style={{fontSize:24}}>科技</div>
+                        </Menu.Item>
+                        <Menu.Item key="caijing">
+                            <div onClick={this.handleClick} style={{fontSize:24}}>财经</div>
+                        </Menu.Item>
+                        {/*<Menu.Item key="shishang">*/}
+                            {/*<div onClick={this.handleClick} style={{fontSize:24}}>时尚</div>*/}
+                        {/*</Menu.Item>*/}
+                    </Menu>
                     <Users loginShow={this.state.loginShow} regShow={this.state.regShow} setShow={this.state.setShow} cancel={this.handleModalCancel} loginToRegister={this.handleLoginToRegister}/>
                     <News newsArr={this.state.newsArr} show={this.state.newsShow} column={this.state.column} columnLikeRatio={this.state.columnLikeRatio} />
                     <About duringDays={this.state.duringDays} newsNum={this.state.newsArr.length} show={this.state.aboutShow} />
@@ -301,9 +372,9 @@ function getUserInfo() {
 function getWelcomedInfo() {
     var userInfo = getUserInfo();
     if(userInfo == undefined){
-        return "您尚未登陆";
+        return "please log in";
     }else{
-        return "您好，"+userInfo.name;
+        return userInfo.name;
     }
 }
 

@@ -32,23 +32,44 @@ router.get('/',function(req,res,next){
 });
 
 router.get('/init',function(req,res,next){
-    news.getAll(function(result){
-        if(result.length==0){
-            res.json({
-                code:0,
-                content:result
-            })
-        }else{
-            res.json({
-                code:1,
-                content:result
+    let promise=new Promise((resolve,reject)=>{
+        for(let i = 0; i < newsType.length; i++){
+            superagent.get('http://v.juhe.cn/toutiao/index?type='+newsType[i]+'&key=98703f292c4aebba837423e10aee73b1').end(function(err, myres){
+                if(err){
+                    console.log("fetch news failed");
+                }else {
+                    console.log(myres.text);
+                    let jsonData=JSON.parse(myres.text);
+                    news.add(jsonData.result.data,(result)=>{});
+                }
+            });
+        }
+        resolve(true);
+    });
+
+    promise.then((unique)=>{
+        if(unique){
+            news.getAll(function(result){
+                if(result.length==0){
+                    res.json({
+                        code:0,
+                        content:result
+                    })
+                }else{
+                    console.log("news array initial successfully");
+                    res.json({
+                        code:1,
+                        content:result
+                    })
+                }
             })
         }
     })
-})
+
+});
 
 router.post('/getone',(req,res,next)=>{
-    News.getOneByTypeOrdered(Number.parseInt(req.body.index),req.body.type,(result)=>{
+    news.getOneByTypeOrdered(Number.parseInt(req.body.index),req.body.type,(result)=>{
         if(result){
             res.json({
                 code:0,
@@ -139,7 +160,7 @@ router.post('/user_behaviour',(req,res,next)=>{
        name:req.body.name,
        column:req.body.column,
    };
-
+    console.log(data);
    news.click(data.newsID,(newsResult)=>{
        user.visit(data.name,data.column,(userResult)=>{
            if(newsResult && userResult){
@@ -180,12 +201,12 @@ router.post('/update_cookie',(req,res,next)=>{
     user.findByNameEmail(info,(result)=>{// result is a list with only one dictionary(item)
         if(result.length>0){
             result[0].code=0;
-            result[0].msg="fail to get user's information";
+            result[0].msg="success to get user's information";
             res.json(result[0]);
         }else{
             res.json({
                 code:-1,
-                mag:"success to get user's information"
+                mag:"fail to get user's information"
             })
         }
     })

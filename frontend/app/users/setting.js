@@ -23,6 +23,8 @@ class Setting extends React.Component{
             }
         });
 
+        console.log("setting : "+this.state.values);
+
         fetch(req).then((response) => {
             return response.json();
         }).then((data) => {
@@ -60,11 +62,11 @@ class Setting extends React.Component{
         if(this.state.show != nextProps.show){
             var userInfo = Cookie.getJSON('userInfo')
             if(userInfo == undefined){
-                message.warning("您好，请先登陆");
+                message.warning("please sign in");
             }else{
                 this.setState({
                     show: nextProps.show,
-                    values: [userInfo.like_top, userInfo.like_shehui, userInfo.like_guonei, userInfo.like_guoji, userInfo.like_yule, userInfo.like_tiyu, userInfo.like_junshi, userInfo.like_keji, userInfo.like_caijing, userInfo.like_shishang]
+                    values: [userInfo.pre_top, userInfo.pre_shehui, userInfo.pre_guonei, userInfo.pre_guoji, userInfo.pre_yule, userInfo.pre_tiyu, userInfo.pre_junshi, userInfo.pre_keji, userInfo.pre_caijing, userInfo.pre_shishang]
                 })
             }
         }
@@ -88,7 +90,7 @@ class Setting extends React.Component{
         return (
             <Modal
                 width={360}
-                title="个人偏好设置"
+                title="setting"
                 visible={this.state.show}
                 onCancel={this.props.cancel}
                 onOk={this.handleOk}

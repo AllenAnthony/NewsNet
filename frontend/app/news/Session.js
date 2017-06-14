@@ -1,13 +1,14 @@
 import React from 'react';
-import {Modal, Alert} from 'antd';
+import {Modal, Alert,Card} from 'antd';
 import superagent from 'superagent';
 import cheerio from 'cheerio';
 import Cookie from 'js-cookie';
 import 'antd/dist/antd.css';
+import './Session.css';
 //import * as fs from 'fs';
 
 // 暂时不考虑卡片打开后 内部的图
-class Card extends React.Component{
+class Session extends React.Component{
     state = {
         imgRatio: "140%",
         imgOpacity: 1,
@@ -111,6 +112,8 @@ class Card extends React.Component{
         }else{
             req_body = `name=${userInfo.name}&newsID=${this.props.id}&column=${this.props.type}`;
         }
+        console.log("put the user behavior into db");
+        console.log(req_body);
         req = new Request('http://127.0.0.1:3000/user_behaviour', {
             method: 'POST',
             body: req_body,
@@ -133,10 +136,10 @@ class Card extends React.Component{
     render(){
         var cardCSS = {
             display: 'inline-block',
-            width: '16.667%',
-            height: '200px',
+            width: '25%',
+            height: '300px',
             overflow: 'hidden',
-            background: '#000',
+            background: '#fff',
             cursor: "pointer",
         };
         var imageCSS = {
@@ -160,19 +163,27 @@ class Card extends React.Component{
             padding: '60px 1%',
         };
         let contentCSS = {
-            padding: '10px 24px',
+            padding: '0px 24px',
             fontFamily: '微软雅黑',
-            fontSize: '20px',
+            fontSize: '15px',
             lineHeight: '40px'
         };
 
-        let typeAndTitle = "["+this.props.type+"] "+this.props.title;
+        let typeAndTitle = "["+this.props.type+"] "+this.props.title+"   ---"+this.props.time;
         return(
             <div style={cardCSS} onClick={this.clickImg} onMouseOver={this.mouseInImg} onMouseOut={this.mouseOutImg}>
-                <div style={typeAndTitleCSS}>{typeAndTitle}</div>
-                <div>
-                    <img style={imageCSS} src={this.props.image}/>
-                </div>
+                {/*<div style={typeAndTitleCSS}>{typeAndTitle}</div>*/}
+                {/*<div>*/}
+                    {/*<img style={imageCSS} src={this.props.image}/>*/}
+                {/*</div>*/}
+                <Card  bodyStyle={{ padding: 5 }}>
+                    <div className="custom-image">
+                        <img alt="example" width="100%" src={this.props.image} />
+                    </div>
+                    <div className="custom-card">
+                        <h3>{typeAndTitle}</h3>
+                    </div>
+                </Card>
                 <Modal
                     width="1100px"
                     title={typeAndTitle}
@@ -181,13 +192,11 @@ class Card extends React.Component{
                     footer={null}
                 >
                     <div style={contentCSS}>
-                        正文：
+                        <a target="_blank" href={this.props.url} style={{paddingLeft: '0px'}}>原文链接</a>
+                        {/*<span style={{paddingLeft: '630px'}}>*/}
+                            {/*<a target="_blank" href={this.props.url} style={{paddingLeft: '20px'}}>原文链接</a>*/}
+                        {/*</span>*/}
                         <div dangerouslySetInnerHTML={{__html: this.state.newsContent}} />
-
-                        <span style={{paddingLeft: '630px'}}>
-                            时间：{this.props.time}
-                            <a target="_blank" href={this.props.url} style={{paddingLeft: '20px'}}>原文链接</a>
-                        </span>
                     </div>
                 </Modal>
             </div>
@@ -196,4 +205,4 @@ class Card extends React.Component{
     }
 }
 
-export default Card;
+export default Session;

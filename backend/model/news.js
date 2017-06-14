@@ -20,6 +20,8 @@ news.add = function(data,callback){
             newsPool.query(query,[data[i].title,data[i].date,data[i].author_name,data[i].url,data[i].thumbnail_pic_s,data[i].category],function(err,results,fields){
                 if(err){
                     console.log("insert data into db error"+ err);
+                }else{
+                    console.log("插入成功");
                 }
             })
         }
@@ -41,14 +43,14 @@ news.getAll = function(callback){
         })
 }
 
-news.getOneByTypeOrdered=function(type,callback){
+news.getOneByTypeOrdered=function(index,type,callback){
 
     let query='SELECT * FROM news WHERE type = ? ORDER BY click_count DESC, id DESC';
     newsPool.query(query,[type],function(err,result,field){
         if(err){
             console.log("get One By Type Ordered error"+err);
         }else{
-            callback(result);
+            callback(result[index]);
         }
     })
 
@@ -61,6 +63,7 @@ news.click=function(id,callback){
             console.log("update click_count error"+err);
         }else{
             if(result.affectedRows==1){
+                console.log("click success");
                 callback(true);
             }else{
                 callback(false);

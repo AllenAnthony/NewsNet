@@ -1,5 +1,5 @@
 import React from 'react';
-import Card from './card';
+import Session from './Session';
 
 import 'antd/dist/antd.css';
 
@@ -10,14 +10,15 @@ class News extends React.Component {
     componentWillReceiveProps(nextProps){
         var cardArr;
 
-        if(nextProps.column == "猜你喜欢"){
+        if(nextProps.column == "我喜欢"){
             // 临时请求新闻，而不是从传递过来的数组中获取，因为后端sql api较为强大，更方便得到想要的数据
             var columnInfo = nextProps.columnLikeRatio.slice(0);
+            console.log("喜欢率： "+columnInfo);
             for(let item of columnInfo){
                 item.reqCount = 0;
             }
             cardArr = [];
-            for(let i = 0; i < 30; i++){
+            for(let i = 0; i < 32; i++){
                 let random = Math.random();
                 let sum = 0;
                 for(let item of columnInfo){
@@ -37,7 +38,7 @@ class News extends React.Component {
                         }).then((data) => {
                             if(data.code == 0){
                                 cardArr.push(
-                                    <Card key={data.news.id} {...data.news} />
+                                    <Session key={data.news.id} {...data.news} />
                                 );
                                 this.setState({
                                     cardArr: cardArr
@@ -56,7 +57,7 @@ class News extends React.Component {
                 // console.log("item: "+item);
                 if(item.type == nextProps.column){
                     return (
-                        <Card key={index} {...item}/>
+                        <Session key={index} {...item}/>
                     );
                 }
             });
