@@ -1,7 +1,7 @@
 // News:
 // id(key AUTO_INCREMENT)
 // title
-// Time
+// time
 // author
 // url
 // image
@@ -13,11 +13,11 @@ let news = {};
 
 news.add = function(data,callback){
 
-    let query = 'INSERT INTO news (title,time,author,url,image,type,click_count) VALUES(?,?,?,?,?,?,?)';
+    let query = 'INSERT INTO news (title,time,author,url,image,type) VALUES(?,?,?,?,?,?)';
     for(let i=0;i<data.length;i++){
         //console.log(data[i].category);
         if(data[i].category!==null){
-            newsPool.query(query,[data[i].title,data[i].date,data[i].author_name,data[i].url,data[i].thumbnail_pic_s,data[i].category,0],function(err,results,fields){
+            newsPool.query(query,[data[i].title,data[i].date,data[i].author_name,data[i].url,data[i].thumbnail_pic_s,data[i].category],function(err,results,fields){
                 if(err){
                     console.log("insert data into db error"+ err);
                 }
@@ -38,7 +38,6 @@ news.getAll = function(callback){
             }
 
             callback(result);
-            connection.release();
         })
 }
 

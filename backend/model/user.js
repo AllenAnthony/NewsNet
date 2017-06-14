@@ -20,7 +20,31 @@ var user={};
 // pre_shishang
 
 preType = function(type){
-    return "pre_"+type;
+    res=null;
+    if(type=="头条"){
+        res="pre_top";
+    }else if(type=="社会"){
+        res="pre_shehui";
+    }else if(type=="国内"){
+        res="pre_guonei";
+    }else if(type=="国际"){
+        res="pre_guoji";
+    }else if(type=="娱乐"){
+        res="pre_yule";
+    }else if(type=="体育"){
+        res="pre_tiyu";
+    }else if(type=="军事"){
+        res="pre_junshi";
+    }else if(type=="科技"){
+        res="pre_keji";
+    }else if(type=="财经"){
+        res="pre_caijing";
+    }else if(type=="时尚"){
+        res="pre_shishang";
+    }else{
+        console.log("type transfer error");
+    }
+    return res;
 }
 
 // add user
@@ -47,7 +71,7 @@ user.prefer=function(data,callback){
             console.log("update prefer error"+err);
         }else{
 
-            query='SELECT * FROM news WHERE name=?'
+            query='SELECT * FROM user WHERE name=?'
             newsPool.query(query,data.name,function(err,result,field){
                 if(err){
                     console.log("get result from update prefer error"+err);
@@ -61,7 +85,8 @@ user.prefer=function(data,callback){
 }
 
 user.visit=function(name,type,callback){
-    query='UPDATE news SET '+preType(type)+' = '+preType(type)+'+1'+'WHERE name = ?';
+    query='UPDATE user SET '+preType(type)+' = '+preType(type)+' + 1 '+'WHERE name = ?';
+    console.log("visit query: "+query);
     newsPool.query(query,[name],function(err,result,field){
         if(err){
             console.log("visit update error :"+err);

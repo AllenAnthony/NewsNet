@@ -15,6 +15,8 @@ import 'antd/dist/antd.css';
 import './App.css';
 
 class App extends React.Component {
+    mynews=[];
+
     state = {
         loginShow: false,
         regShow: false,
@@ -30,6 +32,23 @@ class App extends React.Component {
         column: "头条",   //默认栏目头条
         columnLikeRatio: [],
     };
+
+
+    showMyState = ()=>{
+        console.log("this.state.loginShow: "+this.state.loginShow);
+        console.log("this.state.regShow: "+this.state.regShow);
+        console.log("this.state.setShow: "+this.state.setShow);
+        console.log("this.state.newsShow: "+this.state.newsShow);
+        console.log("this.state.aboutShow: "+this.state.aboutShow);
+        console.log("this.state.collapsed: "+this.state.collapsed);
+        console.log("this.state.loginTextShow: "+this.state.loginTextShow);
+        console.log("this.state.newsArr: "+this.state.newsArr[0]);
+        console.log("this.state.duringDays: "+this.state.duringDays);
+        console.log("this.state.column: "+this.state.column);
+        console.log("this.state.columnLikeRatio: "+this.state.columnLikeRatio);
+        console.log("this.mynews: "+this.mynews);
+    };
+
     onCollapse = (collapsed) => {
         this.setState({
             collapsed,
@@ -199,32 +218,36 @@ class App extends React.Component {
         fetch(req).then((response) => {
             return response.json();
         }).then((data) => {
-            console.log(data);
-
-            if(data.code == 0){
+            if(data.code == 1){
                 this.setState({
                     newsArr: data.content,
                     duringDays: Number.parseInt(duringDays),
-                })
+                });
+                this.mynews=data.content;
+                console.log(data);
+                console.log("第一次赋初值");
+                console.log(this.state.newsArr[0]);
             }else{
                 alert("服务器响应错误");
             }
-        })
+        });
     }
     render() {
-        var userStateCSS = {
+        let userStateCSS = {
             margin: '10px 18px 6px 18px',
             textAlign: 'center',
             fontSize: '20px',
             fontFamily: '微软雅黑',
             color: '#ffffff',
             display: this.state.loginTextShow ? 'block' : 'none',
-        }
-        var newsNav = this.state.newsType.map((item, index) => {
+        };
+        let newsNav = this.state.newsType.map((item, index) => {
             return(
                 <Menu.Item key={index}><div onClick={this.handleClick}>{item}</div></Menu.Item>
             )
-        })
+        });
+        this.showMyState();
+
         return (
             <Layout style={{ height: "100vh" }}>
                 <Sider
@@ -283,6 +306,7 @@ function getWelcomedInfo() {
         return "您好，"+userInfo.name;
     }
 }
+
 
 function getMaxOfArrObj(arr, property) {
     var result = 0;

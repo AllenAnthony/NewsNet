@@ -37,9 +37,31 @@ class LoginForm extends React.Component{
     }
     render() {
         const { getFieldDecorator } = this.props.form;
+        const formItemLayout = {
+            labelCol: {
+                xs: { span: 24 },
+                sm: { span: 6 },
+            },
+            wrapperCol: {
+                xs: { span: 24 },
+                sm: { span: 14 },
+            },
+        };
+        const tailFormItemLayout = {
+            wrapperCol: {
+                xs: {
+                    span: 24,
+                    offset: 0,
+                },
+                sm: {
+                    span: 14,
+                    offset: 6,
+                },
+            },
+        };
         return (
             <Modal
-                width={420}
+                width={720}
                 title="用户登录"
                 visible={this.state.show}
                 onCancel={this.props.cancel}
@@ -47,19 +69,27 @@ class LoginForm extends React.Component{
                 confirmLoading={this.state.confirmLoading}
             >
                 <div style={{ margin: '30px 0px 0px 43px' }}>
-                    <Form onSubmit={this.handleSubmit} className="login-form">
-                        <FormItem>
+                    <Form onSubmit={this.handleSubmit} >
+                        <FormItem
+                            {...formItemLayout}
+                            label="Username"
+                            hasFeedback
+                        >
                             {getFieldDecorator('username', {
                                 rules: [{ required: true, message: 'Please input your username!' }],
                             })(
-                                <Input prefix={<Icon type="user" style={{ fontSize: 13 }} />} placeholder="Username" />
+                                <Input />
                             )}
                         </FormItem>
-                        <FormItem>
+                        <FormItem
+                            {...formItemLayout}
+                            label="password"
+                            hasFeedback
+                        >
                             {getFieldDecorator('password', {
                                 rules: [{ required: true, message: 'Please input your Password!' }],
                             })(
-                                <Input prefix={<Icon type="lock" style={{ fontSize: 13 }} />} type="password" placeholder="Password" />
+                                <Input />
                             )}
                         </FormItem>
                         <FormItem>

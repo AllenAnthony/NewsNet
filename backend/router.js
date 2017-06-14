@@ -12,9 +12,13 @@ let isFreshing=0;
 router.get('/fresh', function(req, res, next) {
     for(let i = 0; i < newsType.length; i++){
         superagent.get('http://v.juhe.cn/toutiao/index?type='+newsType[i]+'&key=98703f292c4aebba837423e10aee73b1').end(function(err, myres){
-            console.log(myres.text);
-            let jsonData=JSON.parse(myres.text);
-            news.add(jsonData.result.data,(result)=>{});
+            if(err){
+                console.log("fetch news failed");
+            }else {
+                console.log(myres.text);
+                let jsonData=JSON.parse(myres.text);
+                news.add(jsonData.result.data,(result)=>{});
+            }
         });
     }
     res.send("fresh success");

@@ -4,6 +4,7 @@ import superagent from 'superagent';
 import cheerio from 'cheerio';
 import Cookie from 'js-cookie';
 import 'antd/dist/antd.css';
+//import * as fs from 'fs';
 
 // 暂时不考虑卡片打开后 内部的图
 class Card extends React.Component{
@@ -128,7 +129,7 @@ class Card extends React.Component{
         this.setState({
             text: false,
         });
-    }
+    };
     render(){
         var cardCSS = {
             display: 'inline-block',
@@ -158,13 +159,14 @@ class Card extends React.Component{
             textAlign: 'center',
             padding: '60px 1%',
         };
-        var contentCSS = {
+        let contentCSS = {
             padding: '10px 24px',
             fontFamily: '微软雅黑',
             fontSize: '20px',
             lineHeight: '40px'
-        }
-        var typeAndTitle = "["+this.props.type+"] "+this.props.title;
+        };
+
+        let typeAndTitle = "["+this.props.type+"] "+this.props.title;
         return(
             <div style={cardCSS} onClick={this.clickImg} onMouseOver={this.mouseInImg} onMouseOut={this.mouseOutImg}>
                 <div style={typeAndTitleCSS}>{typeAndTitle}</div>

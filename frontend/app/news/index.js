@@ -50,6 +50,10 @@ class News extends React.Component {
             }
         }else{
             cardArr = nextProps.newsArr.map((item, index)=>{
+                // console.log("item.type: "+item.type);
+                // console.log(item.url);
+                // console.log("nextProps.column: "+nextProps.column);
+                // console.log("item: "+item);
                 if(item.type == nextProps.column){
                     return (
                         <Card key={index} {...item}/>
@@ -58,7 +62,7 @@ class News extends React.Component {
             });
             this.setState({
                 cardArr: cardArr
-            })
+            });
         }
     }
     render(){
