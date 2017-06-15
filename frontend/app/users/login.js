@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Icon, Input, Checkbox, Modal } from 'antd';
-import {login} from './api';
+import {login} from './util';
 import 'antd/dist/antd.css';
 import './login.css'
 

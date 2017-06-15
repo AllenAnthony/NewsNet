@@ -114,7 +114,7 @@ class Session extends React.Component{
         }
         console.log("put the user behavior into db");
         console.log(req_body);
-        req = new Request('http://127.0.0.1:3000/user_behaviour', {
+        req = new Request('http://127.0.0.1:3000/click_visit', {
             method: 'POST',
             body: req_body,
             headers: {

@@ -13,7 +13,6 @@ let app = express();
 //app.set用来设置app中的字段
 app.set('views', './views');
 app.set('view engine', 'ejs');
-//app.set('trust proxy', 1);
 
 //使用路由 或 设置中间件
 app.use(helmet());

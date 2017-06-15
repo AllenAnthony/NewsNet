@@ -21,14 +21,11 @@ news.add = function(data,callback){
                 if(err){
                     console.log("insert data into db error"+ err);
                 }else{
-                    console.log("插入成功");
+                    //console.log("插入成功");
                 }
             })
         }
-        //console.log("插入成功");
     }
-
-
 }
 
 news.getAll = function(callback){

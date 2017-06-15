@@ -26,10 +26,9 @@ router.get('/fresh', function(req, res, next) {
 
 
 
-router.get('/',function(req,res,next){
-    //res.render('index',{});
-    res.sendfile(__dirname+"/view/"+"index.html")
-});
+// router.get('/',function(req,res,next){
+//     res.sendfile(__dirname+"/view/"+"index.html")
+// });
 
 router.get('/init',function(req,res,next){
     let promise=new Promise((resolve,reject)=>{
@@ -68,7 +67,7 @@ router.get('/init',function(req,res,next){
 
 });
 
-router.post('/getone',(req,res,next)=>{
+router.post('/getOneByTypeOrdered',(req,res,next)=>{
     news.getOneByTypeOrdered(Number.parseInt(req.body.index),req.body.type,(result)=>{
         if(result){
             res.json({
@@ -98,21 +97,20 @@ router.post('/register',(req,res,next)=>{
                 resolve(true);
             }
         })
-    })
+    });
 
     promise.then((unique)=>{
         if(unique){
-
             user.add(req.body,(result)=>{
                 if(result){
                     res.json({
                         code: 0,
-                        msg: "注册成功"
+                        msg: "register successful"
                     })
                 }else{
                     res.json({
                         code: -1,
-                        msg: "注册失败，数据库错误"
+                        msg: "register failed"
                     })
                 }
             })
@@ -154,7 +152,7 @@ router.post('/setting',(req,res,next)=>{
    })
 });
 
-router.post('/user_behaviour',(req,res,next)=>{
+router.post('/click_visit',(req,res,next)=>{
    let data={
        newsID:Number.parseInt(req.body.newsID),
        name:req.body.name,

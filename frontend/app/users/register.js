@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Input, Button, Modal, message } from 'antd';
-import {login} from './api'
+import {login} from './util'
 import 'antd/dist/antd.css';
 
 const FormItem = Form.Item;

@@ -5,7 +5,7 @@ import Cookie from 'js-cookie';
 import Users from "./users/index"
 import News from "./news/index";
 import About from "./about/index";
-import {updateCookie} from './users/api'
+import {updateCookie} from './users/util'
 
 
 const { Sider } = Layout;
@@ -321,9 +321,6 @@ class App extends React.Component {
                         selectedKeys={[this.state.current]}
                         mode="horizontal"
                     >
-                        <Menu.Item key="youmaylike">
-                            <div onClick={this.handleClick} style={{fontSize:24}}>我喜欢</div>
-                        </Menu.Item>
                         <Menu.Item key="top">
                             <div onClick={this.handleClick} style={{fontSize:24}}>头条</div>
                         </Menu.Item>
@@ -350,6 +347,9 @@ class App extends React.Component {
                         </Menu.Item>
                         <Menu.Item key="caijing">
                             <div onClick={this.handleClick} style={{fontSize:24}}>财经</div>
+                        </Menu.Item>
+                        <Menu.Item key="youmaylike">
+                            <div onClick={this.handleClick} style={{fontSize:24}}>我喜欢</div>
                         </Menu.Item>
                         {/*<Menu.Item key="shishang">*/}
                             {/*<div onClick={this.handleClick} style={{fontSize:24}}>时尚</div>*/}

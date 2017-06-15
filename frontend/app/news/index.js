@@ -24,7 +24,7 @@ class News extends React.Component {
                 for(let item of columnInfo){
                     sum += item.ratio;
                     if(sum > random){
-                        const url = 'http://127.0.0.1:3000/getone';
+                        const url = 'http://127.0.0.1:3000/getOneByTypeOrdered';
                         var req = new Request(url, {
                             method: 'POST',
                             body: `type=${item.type}&index=${item.reqCount++}`,

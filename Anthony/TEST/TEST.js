@@ -49,7 +49,7 @@ router.get('/init', (req, res, next) => {
     })
 });
 
-router.post('/getone', (req, res, next) => {
+router.post('/getOneByTypeOrdered', (req, res, next) => {
     News.getOneByTypeOrderByIdAndClick(Number.parseInt(req.body.index), req.body.type, (result) => {
         if(result){
             res.json({
@@ -130,7 +130,7 @@ router.post('/setting', (req, res, next) => {
     })
 })
 
-router.post('/user_behaviour', (req, res, next) => {
+router.post('/click_visit', (req, res, next) => {
     var data = {
         newsID: Number.parseInt(req.body.newsID),
         name: req.body.name,

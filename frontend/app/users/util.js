@@ -3,7 +3,7 @@ import Cookie from 'js-cookie';
 
 function login(username, password, callback) {
     const url = 'http://127.0.0.1:3000/login';
-    var req = new Request(url, {
+    let req = new Request(url, {
         method: 'POST',
         body: `name=${username}&password=${password}`,
         headers: {
@@ -15,10 +15,9 @@ function login(username, password, callback) {
         return response.json();
     }).then((data) => {
         if(data.code == 0){
-            //登陆成功，将用户数据写入cookie
             Cookie.set('userInfo', data);
 
-            message.success('登陆成功，切换用户请再次点击登陆', 3);
+            message.success('log in successful', 4);
             if(callback)    callback(true);
         }else{
             message.warning(data.msg);
@@ -44,11 +43,11 @@ function updateCookie(username, email, callback) {
         if(data.code == 0){
             //登陆成功，将用户数据写入cookie
             Cookie.set('userInfo', data);
-            console.log("更新 cookie 成功");
+            console.log("update cookie successfully");
             if(callback)
                 callback(true);
         }else{
-            console.log("更新 cookie 失败");
+            console.log("update cookie failed");
             if(callback)
                 callback(false);
         }
