@@ -30,7 +30,7 @@ news.add = function(data,callback){
 
 news.getAll = function(callback){
 
-    let query='SELECT * FROM news ORDER by id DESC';
+    let query='SELECT * FROM news ORDER by id DESC limit 500';
     newsPool.query(query,[],function(err,result,field){
             if(err){
                 console.log("get all error"+err);

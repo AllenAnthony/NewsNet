@@ -49,6 +49,7 @@ router.get('/init',function(req,res,next){
     promise.then((unique)=>{
         if(unique){
             news.getAll(function(result){
+                //console.log(result);
                 if(result.length==0){
                     res.json({
                         code:0,

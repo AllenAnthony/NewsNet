@@ -6,12 +6,11 @@ import 'antd/dist/antd.css';
 class News extends React.Component {
     state = {
         cardArr: []
-    }
+    };
     componentWillReceiveProps(nextProps){
-        var cardArr;
+        let cardArr;
 
         if(nextProps.column == "我喜欢"){
-            // 临时请求新闻，而不是从传递过来的数组中获取，因为后端sql api较为强大，更方便得到想要的数据
             var columnInfo = nextProps.columnLikeRatio.slice(0);
             console.log("喜欢率： "+columnInfo);
             for(let item of columnInfo){
@@ -67,7 +66,7 @@ class News extends React.Component {
         }
     }
     render(){
-        var display = (this.props.show == true) ? "block" : "none";
+        let display = (this.props.show == true) ? "block" : "none";
 
         return (
             <div style={{ width: '100%', height: '100%', position: 'relative', display: display }}>

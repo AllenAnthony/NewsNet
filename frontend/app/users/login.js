@@ -62,7 +62,7 @@ class LoginForm extends React.Component{
         return (
             <Modal
                 width={720}
-                title="用户登录"
+                title="log in"
                 visible={this.state.show}
                 onCancel={this.props.cancel}
                 onOk={this.handleOk}
@@ -99,7 +99,7 @@ class LoginForm extends React.Component{
                             })(
                                 <Checkbox>Remember me</Checkbox>
                             )}
-                            <a className="login-form-forgot"><span style={{color: '#5f5f5f'}}>Or </span><a onClick={this.props.loginToRegister}>register now!</a></a>
+                            <a className="login-form-forgot"><span style={{color: '#5f5f5f'}}>or </span><a onClick={this.props.loginToRegister}>register now!</a></a>
                         </FormItem>
                     </Form>
                 </div>

@@ -4,13 +4,12 @@ import Cookie from 'js-cookie';
 
 import Users from "./users/index"
 import News from "./news/index";
-import About from "./about/index";
 import {updateCookie} from './users/util'
 
 
 const { Sider } = Layout;
-const SubMenu = Menu.SubMenu;
-const MenuItemGroup = Menu.ItemGroup;
+// const SubMenu = Menu.SubMenu;
+// const MenuItemGroup = Menu.ItemGroup;
 
 import 'antd/dist/antd.css';
 import './App.css';
@@ -66,40 +65,24 @@ class App extends React.Component {
     handleClick = (event) => {
         var value = event.target.outerHTML;
         var nowState;
-        if(value.includes("登陆")){
+        if(value.includes("sign in")){
             nowState = {
                 loginShow: true,
                 regShow: false,
                 setShow: false,
             };
-        }else if(value.includes("注册")){
+        }else if(value.includes("sign up")){
             nowState = {
                 loginShow: false,
                 regShow: true,
                 setShow: false,
             };
-        }else if(value.includes("个人设置")){
+        }else if(value.includes("setting")){
             nowState = {
                 loginShow: false,
                 regShow: false,
                 setShow: true,
             };
-        }else if(value.includes("新闻中心")||value.includes("global")){
-            nowState = {
-                loginShow: false,
-                regShow: false,
-                setShow: false,
-                newsShow: true,
-                aboutShow: false,
-            }
-        }else if(value.includes("关于")||value.includes("file")){
-            nowState = {
-                loginShow: false,
-                regShow: false,
-                setShow: false,
-                newsShow: false,
-                aboutShow: true,
-            }
         }else{
             //新闻栏目
             let column = event.target.innerText;
@@ -238,7 +221,7 @@ class App extends React.Component {
                 console.log("第一次赋初值");
                 console.log(this.state.newsArr[0]);
             }else{
-                alert("服务器响应错误");
+                alert("server error");
             }
         });
     }
@@ -290,29 +273,9 @@ class App extends React.Component {
                     </div>
                     <Menu  mode={this.state.mode}>
 
-                        <Menu.Item style={{ background: '#0dbdff' }}><div className="nav-text" onClick={this.handleClick}>登陆</div></Menu.Item>
-                        <Menu.Item style={{ background: '#0dbdff' }}><div className="nav-text" onClick={this.handleClick}>注册</div></Menu.Item>
-                        <Menu.Item style={{ background: '#0dbdff' }}><div className="nav-text" onClick={this.handleClick}>个人设置</div></Menu.Item>
-                        {/*<SubMenu*/}
-                            {/*title={<div><Icon type="user" /><span className="nav-text">用户中心</span></div>}*/}
-                        {/*>*/}
-                            {/*<Menu.Item><div onClick={this.handleClick}>登陆</div></Menu.Item>*/}
-                            {/*<Menu.Item><div onClick={this.handleClick}>注册</div></Menu.Item>*/}
-                            {/*<Menu.Item><div onClick={this.handleClick}>个人设置</div></Menu.Item>*/}
-                        {/*</SubMenu>*/}
-
-                        {/*<SubMenu*/}
-                            {/*title={<div onClick={this.handleClick}><Icon type="global" /><span className="nav-text">新闻中心</span></div>}*/}
-                        {/*>*/}
-                            {/*{newsNav}*/}
-                        {/*</SubMenu>*/}
-
-                        {/*<Menu.Item>*/}
-                                {/*<div onClick={this.handleClick}>*/}
-                                    {/*<Icon type="file" />*/}
-                                    {/*<span className="nav-text">关于</span>*/}
-                                {/*</div>*/}
-                        {/*</Menu.Item>*/}
+                        <Menu.Item style={{ background: '#0dbdff' }}><div className="nav-text" onClick={this.handleClick}>sign in</div></Menu.Item>
+                        <Menu.Item style={{ background: '#0dbdff' }}><div className="nav-text" onClick={this.handleClick}>sign up</div></Menu.Item>
+                        <Menu.Item style={{ background: '#0dbdff' }}><div className="nav-text" onClick={this.handleClick}>setting</div></Menu.Item>
                     </Menu>
                 </Sider>
                 <Layout style={{ background: "#fff"}}>
@@ -351,13 +314,9 @@ class App extends React.Component {
                         <Menu.Item key="youmaylike">
                             <div onClick={this.handleClick} style={{fontSize:24}}>我喜欢</div>
                         </Menu.Item>
-                        {/*<Menu.Item key="shishang">*/}
-                            {/*<div onClick={this.handleClick} style={{fontSize:24}}>时尚</div>*/}
-                        {/*</Menu.Item>*/}
                     </Menu>
                     <Users loginShow={this.state.loginShow} regShow={this.state.regShow} setShow={this.state.setShow} cancel={this.handleModalCancel} loginToRegister={this.handleLoginToRegister}/>
                     <News newsArr={this.state.newsArr} show={this.state.newsShow} column={this.state.column} columnLikeRatio={this.state.columnLikeRatio} />
-                    <About duringDays={this.state.duringDays} newsNum={this.state.newsArr.length} show={this.state.aboutShow} />
                 </Layout>
             </Layout>
         );

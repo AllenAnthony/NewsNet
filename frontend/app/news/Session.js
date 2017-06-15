@@ -15,85 +15,21 @@ class Session extends React.Component{
         textOpacity: 0,
         text: false,
         newsContent: "",
-    }
-    // 图片动效定时器
-    timmer = {
-        in: null,
-        out: null,
-    }
-    mouseInImg = (event) => {
-        // debug
-        // console.log("in");
-        // console.log(event.target);
-
-        // 清除 鼠标离开 定时器
-        if(this.timmer.out !== null){
-            clearInterval(this.timmer.out);
-        }
-        // 图片变小，透明，文字浮现
-        var nowRatio = Number.parseInt(this.state.imgRatio);
-        var nowImgOpacity = this.state.imgOpacity;
-        var nowTextOpacity = this.state.textOpacity;
-        this.timmer.in = setInterval(()=>{
-            if(nowRatio <= 120){
-                clearInterval(this.timmer.in);
-            }else{
-                nowRatio--;
-                nowImgOpacity-=0.015;
-                nowTextOpacity+=0.045;
-                this.setState({
-                    imgRatio: nowRatio+"%",
-                    imgOpacity: nowImgOpacity,
-                    textOpacity: nowTextOpacity,
-                })
-            }
-        },30);
-    }
-    mouseOutImg = (event) => {
-        // debug
-        // console.log("out");
-        // console.log(event.target);
-
-        // 清除 鼠标进入 定时器
-        if(this.timmer.in !== null){
-            clearInterval(this.timmer.in);
-        }
-        // 图片变大，不透明，文字淡出
-        var nowRatio = Number.parseInt(this.state.imgRatio);
-        var nowImgOpacity = this.state.imgOpacity;
-        var nowTextOpacity = this.state.textOpacity;
-        this.timmer.out = setInterval(()=>{
-            if(nowRatio >= 140){
-                clearInterval(this.timmer.out);
-            }else{
-                nowRatio++;
-                nowImgOpacity+=0.015;
-                nowTextOpacity-=0.045
-                this.setState({
-                    imgRatio: nowRatio+"%",
-                    imgOpacity:nowImgOpacity,
-                    textOpacity: nowTextOpacity,
-                })
-            }
-        },30);
-    }
+    };
     clickImg = (event) => {
-        //将新闻内容爬虫下来
         superagent.get(this.props.url).end((err, sres) => {
             if(err){
                 //error
             }
 
-            var $ = cheerio.load(sres.text);
-            var content = $('#content').text().trim();
+            let $ = cheerio.load(sres.text);
+            let content = $('#content').text().trim();
 
-            // JSX 默认转义所有字符串，需要 dangerouslySetInnerHTML
-            var promise = new Promise((resolve, reject) => {
+            let promise = new Promise((resolve, reject) => {
                 resolve(content);
             });
             promise.then((data) => {
-                // 中间有不可显字符
-                var result = data.replace(/[\n\s]+/g, "<br />");
+                let result = data.replace(/[\n\s]+/g, "<br />");
                 return result;
             }).then((data) => {
                 this.setState({
@@ -104,9 +40,9 @@ class Session extends React.Component{
         })
 
         //将用户操作放入数据库
-        var userInfo = Cookie.getJSON('userInfo');
-        var req;
-        var req_body;
+        let userInfo = Cookie.getJSON('userInfo');
+        let req;
+        let req_body;
         if(userInfo == undefined){
             req_body = `newsID=${this.props.id}`;
         }else{
@@ -127,14 +63,14 @@ class Session extends React.Component{
         }).then((data) => {
             console.log(data.msg);
         })
-    }
+    };
     handleCancel = (event) => {
         this.setState({
             text: false,
         });
     };
     render(){
-        var cardCSS = {
+        let cardCSS = {
             display: 'inline-block',
             width: '25%',
             height: '300px',
@@ -142,7 +78,7 @@ class Session extends React.Component{
             background: '#fff',
             cursor: "pointer",
         };
-        var imageCSS = {
+        let imageCSS = {
             width: this.state.imgRatio,
             height: this.state.imgRatio,
             opacity: this.state.imgOpacity,
@@ -150,7 +86,7 @@ class Session extends React.Component{
             textAlign: 'center',
             verticalAlign: 'middle',
         };
-        var typeAndTitleCSS = {
+        let typeAndTitleCSS = {
             opacity: this.state.textOpacity,
 
             width: '16.667%',
@@ -171,11 +107,7 @@ class Session extends React.Component{
 
         let typeAndTitle = "["+this.props.type+"] "+this.props.title+"   ---"+this.props.time;
         return(
-            <div style={cardCSS} onClick={this.clickImg} onMouseOver={this.mouseInImg} onMouseOut={this.mouseOutImg}>
-                {/*<div style={typeAndTitleCSS}>{typeAndTitle}</div>*/}
-                {/*<div>*/}
-                    {/*<img style={imageCSS} src={this.props.image}/>*/}
-                {/*</div>*/}
+            <div style={cardCSS} onClick={this.clickImg} >
                 <Card  bodyStyle={{ padding: 5 }}>
                     <div className="custom-image">
                         <img alt="example" width="100%" src={this.props.image} />
@@ -193,9 +125,6 @@ class Session extends React.Component{
                 >
                     <div style={contentCSS}>
                         <a target="_blank" href={this.props.url} style={{paddingLeft: '0px'}}>原文链接</a>
-                        {/*<span style={{paddingLeft: '630px'}}>*/}
-                            {/*<a target="_blank" href={this.props.url} style={{paddingLeft: '20px'}}>原文链接</a>*/}
-                        {/*</span>*/}
                         <div dangerouslySetInnerHTML={{__html: this.state.newsContent}} />
                     </div>
                 </Modal>

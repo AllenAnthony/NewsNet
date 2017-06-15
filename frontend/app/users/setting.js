@@ -1,21 +1,22 @@
 import React from 'react';
-import { Modal, message } from 'antd';
+import { Modal, message,Input,Col} from 'antd';
 import Cookie from 'js-cookie';
 import 'antd/dist/antd.css';
 
+const InputGroup = Input.Group;
 
 class Setting extends React.Component{
     state = {
         show: false,
         confirmLoading: false,
-        values: [5,5,5,5,5,5,5,5,5,5],
-    }
-    type = ["头条", "社会", "国内", "国际", "娱乐", "体育", "军事", "科技", "财经", "时尚"];
+        values: [6,6,6,6,6,6,6,6,6,6],
+    };
+    type = ["头条", "社会", "国内", "国际", "娱乐", "体育", "军事", "科技", "财经","时尚"];
 
     handleOk = () => {
-        var userInfo = Cookie.getJSON('userInfo');
+        let userInfo = Cookie.getJSON('userInfo');
         const url = 'http://127.0.0.1:3000/setting';
-        var req = new Request(url, {
+        let req = new Request(url, {
             method: 'POST',
             body: `name=${userInfo.name}&settingArr=${this.state.values}`,
             headers: {
@@ -43,62 +44,129 @@ class Setting extends React.Component{
     };
 
     handleChange = (event) => {
-        var inputArr = event.target.parentNode.parentNode.childNodes;
-        var changedValue = [];
-        var i;
+        let inputArr = event.target.parentNode.parentNode.childNodes;
+        let changedValue = this.state.values;
+        let i;
+        console.log(inputArr);
+        console.log(inputArr.length);
         for(i = 0; i < inputArr.length; i++){
-            let tmpResult = inputArr[i].childNodes[6].value;
-            tmpResult = tmpResult > 5 ? 5 : tmpResult;
+            let tmpResult = Number.parseInt(inputArr[i].childNodes[3].value);
+            tmpResult = tmpResult > 6 ? 6 : tmpResult;
             tmpResult = tmpResult < 0 ? 0 : tmpResult;
-            changedValue[i] = tmpResult;
+            changedValue[Number.parseInt(inputArr[i].childNodes[3].id)] = tmpResult;
         }
-
+        console.log(changedValue);
         this.setState({
             values: changedValue,
         })
-    }
+    };
 
     componentWillReceiveProps(nextProps) {
         if(this.state.show != nextProps.show){
-            var userInfo = Cookie.getJSON('userInfo')
+            let userInfo = Cookie.getJSON('userInfo')
             if(userInfo == undefined){
                 message.warning("please sign in");
             }else{
                 this.setState({
                     show: nextProps.show,
-                    values: [userInfo.pre_top, userInfo.pre_shehui, userInfo.pre_guonei, userInfo.pre_guoji, userInfo.pre_yule, userInfo.pre_tiyu, userInfo.pre_junshi, userInfo.pre_keji, userInfo.pre_caijing, userInfo.pre_shishang]
+                    values: [userInfo.pre_top, userInfo.pre_shehui, userInfo.pre_guonei, userInfo.pre_guoji, userInfo.pre_yule, userInfo.pre_tiyu, userInfo.pre_junshi, userInfo.pre_keji, userInfo.pre_caijing,userInfo.pre_shishang]
                 })
             }
         }
     }
     render() {
-        var textCSS = {
+        let textCSS = {
             fontFamily: '微软雅黑',
             fontSize:  '18px',
             lineHeight: '24px',
             paddingBottom: '12px'
         };
-        var settingArr = this.type.map((item, index) => {
-            return (
-                <div key={index} style={textCSS}>
-                    {item}：<input id={index} type="number" value={this.state.values[index]} onChange={this.handleChange} />
-                    {/* 不知道怎么用，index 传递不了 */}
-                    {/*<Rate onChange={this.handleChange} value={this.state.values[index]} allowHalf />*/}
-                </div>
-            )
-        })
         return (
             <Modal
-                width={360}
+                width={720}
                 title="setting"
                 visible={this.state.show}
                 onCancel={this.props.cancel}
                 onOk={this.handleOk}
                 confirmLoading={this.state.confirmLoading}
             >
-                <div style={{margin: '24px 0px 24px 30px'}}>
-                    {settingArr}
-                </div>
+                <InputGroup size="small">
+                    <Col span="12">
+                        <div style={{margin: '10px 20px 10px 0px'}} >
+                            <div key={0} style={textCSS}>
+                                头条：<input id={0} type="number" value={this.state.values[0]} onChange={this.handleChange} />
+                            </div>
+                        </div>
+                    </Col>
+                    <Col span="12">
+                        <div style={{margin: '10px 20px 10px 0px'}} >
+                            <div key={1} style={textCSS}>
+                                社会：<input id={1} type="number" value={this.state.values[1]} onChange={this.handleChange} />
+                            </div>
+                        </div>
+                    </Col>
+                </InputGroup>
+
+                <InputGroup size="small">
+                    <Col span="12">
+                        <div style={{margin: '10px 20px 10px 0px'}} >
+                            <div key={2} style={textCSS}>
+                                国内：<input id={2} type="number" value={this.state.values[2]} onChange={this.handleChange} />
+                            </div>
+                        </div>
+                    </Col>
+                    <Col span="12">
+                        <div style={{margin: '10px 20px 10px 0px'}} >
+                            <div key={3} style={textCSS}>
+                                国际：<input id={3} type="number" value={this.state.values[3]} onChange={this.handleChange} />
+                            </div>
+                        </div>
+                    </Col>
+                </InputGroup>
+
+                <InputGroup size="small">
+                    <Col span="12">
+                        <div style={{margin: '10px 20px 10px 0px'}} >
+                            <div key={4} style={textCSS}>
+                                娱乐：<input id={4} type="number" value={this.state.values[4]} onChange={this.handleChange} />
+                            </div>
+                        </div>
+                    </Col>
+                    <Col span="12">
+                        <div style={{margin: '10px 20px 10px 0px'}} >
+                            <div key={5} style={textCSS}>
+                                体育：<input id={5} type="number" value={this.state.values[5]} onChange={this.handleChange} />
+                            </div>
+                        </div>
+                    </Col>
+                </InputGroup>
+
+                <InputGroup size="small">
+                    <Col span="12">
+                        <div style={{margin: '10px 20px 10px 0px'}} >
+                            <div key={6} style={textCSS}>
+                                军事：<input id={6} type="number" value={this.state.values[6]} onChange={this.handleChange} />
+                            </div>
+                        </div>
+                    </Col>
+                    <Col span="12">
+                        <div style={{margin: '10px 20px 10px 0px'}} >
+                            <div key={7} style={textCSS}>
+                                科技：<input id={7} type="number" value={this.state.values[7]} onChange={this.handleChange} />
+                            </div>
+                        </div>
+                    </Col>
+                </InputGroup>
+
+                <InputGroup size="small">
+                    <Col span="12">
+                        <div style={{margin: '10px 20px 10px 0px'}} >
+                            <div key={8} style={textCSS}>
+                                财经：<input id={8} type="number" value={this.state.values[8]} onChange={this.handleChange} />
+                            </div>
+                        </div>
+                    </Col>
+                </InputGroup>
             </Modal>
         );
     }

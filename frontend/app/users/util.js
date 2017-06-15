@@ -41,7 +41,6 @@ function updateCookie(username, email, callback) {
         return response.json();
     }).then((data) => {
         if(data.code == 0){
-            //登陆成功，将用户数据写入cookie
             Cookie.set('userInfo', data);
             console.log("update cookie successfully");
             if(callback)

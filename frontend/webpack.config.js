@@ -16,7 +16,7 @@ module.exports = {
 			},
             {
                 test: /\.css$/,
-                loader: 'style-loader!css-loader'   //感叹号的作用在于使同一文件能够使用不同类型的loader
+                loader: 'style-loader!css-loader'
             },
             {
                 test: /\.json$/,

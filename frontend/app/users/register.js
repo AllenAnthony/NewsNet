@@ -17,7 +17,6 @@ class RegisterForm extends React.Component{
             if (!err) {
                 console.log('Received values of form: ', values);
 
-                // 若不设置 headers 则服务器的 body 无法正确解析
                 const url = 'http://127.0.0.1:3000/register';
                 var req = new Request(url, {
                     method: 'POST',
@@ -31,12 +30,11 @@ class RegisterForm extends React.Component{
                     return response.json();
                 }).then((data) => {
                     if(data.code == 0){
-                        //注册成功 帮助用户直接登陆
                         this.setState({
                             show: false,
                         })
 
-                        message.success(data.msg + "，自动登录中", 1, () => {
+                        message.success(data.msg + ", log in already", 2, () => {
                             login(values.username, values.password);
                         });
                     }else{
@@ -97,7 +95,7 @@ class RegisterForm extends React.Component{
         return (
             <Modal
                 width={720}
-                title="用户注册"
+                title="register"
                 visible={this.state.show}
                 onCancel={this.props.cancel}
                 footer={null}
@@ -170,7 +168,7 @@ class RegisterForm extends React.Component{
                             )}
                         </FormItem>
                         <FormItem {...tailFormItemLayout}>
-                            <Button type="primary" htmlType="submit" size="large">注册</Button>
+                            <Button type="primary" htmlType="submit" size="large">sign up</Button>
                         </FormItem>
                     </Form>
                 </div>
